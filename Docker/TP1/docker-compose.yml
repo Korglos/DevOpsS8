@@ -1,0 +1,49 @@
+services:
+  # Servie de la base de données
+  pg-database:
+    # Va build le Dockerfile dans le dossier ./DataBase
+    build: ./DataBase
+    # On ajoute le service au réseau tp1-network1
+    networks:
+      - tp1-network1
+    # On ajoute le fichier .env
+    env_file:
+      - .env
+    # On monte le volume ./DataBase/data dans /var/lib/postgresql/data
+    volumes:
+      - ./DataBase/data:/var/lib/postgresql/data
+
+  # Service de l'API
+  api-back:
+    # Va build le Dockerfile dans le dossier ./API/simple-api-student-main
+    build: ./API/simple-api-student-main
+    # On ajoute le fichier .env
+    env_file: 
+      - .env
+    # On ajoute le service au réseau tp1-network1 et tp1-network2
+    networks:
+      - tp1-network1
+      - tp1-network2
+    # Indique que le service dépend du service pg-database
+    depends_on:
+      - pg-database
+
+  # Service du Front
+  rproxy-front:
+    # Va build le Dockerfile dans le dossier ./Front
+    build: ./Front
+    # Indique que le service est accessible sur le port 80
+    ports:
+      - "80:80"
+    # On ajoute le service au réseau tp1-network
+    networks:
+      - tp1-network2
+    # Indique que le service dépend du service api-back
+    depends_on:
+      - api-back
+
+# On créé 2 réseaux, un pour la db et l'api et un pour le front et l'api.
+# Comme ça le front ne peut pas accéder directement à la db.
+networks:
+  tp1-network1:
+  tp1-network2:
