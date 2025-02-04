@@ -50,7 +50,7 @@ jobs:
 
       # Build and test the app with Maven
       - name: Build and test with Maven
-        # On se place dans le dossier où se trouve le pom.xml et on lance mvn clean verify
+        # On se place dans le dossier où se trouve le pom.xml et on lance l'analyse sonar
         run: |
           cd Docker/TP1/API/simple-api-student-main
           mvn -B verify sonar:sonar -Dsonar.projectKey=Korglos_DevOpsS8 -Dsonar.organization=korglos -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
