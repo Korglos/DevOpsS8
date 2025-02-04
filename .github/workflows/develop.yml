@@ -60,3 +60,20 @@ jobs:
           set -e
           cd Docker/TP1/API/simple-api-student-main
           mvn -B verify sonar:sonar -Dsonar.projectKey=Korglos_DevOpsS8 -Dsonar.organization=korglos -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+
+  cancel-pr-on-failure:
+    needs: [test-backend, sonar-backend]
+    if: failure()
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Close PR on Failure
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pr_number=$(jq --raw-output .pull_request.number < "$GITHUB_EVENT_PATH")
+          echo "Closing PR #$pr_number due to pipeline failure"
+          curl -X PATCH \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number \
+            -d '{"state":"closed"}'
