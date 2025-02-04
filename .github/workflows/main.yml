@@ -14,12 +14,12 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
      #checkout your github code using actions/checkout@v2.5.0
-      - uses: actions/checkout@v2.5.0
+      - uses: actions/checkout@v4
 
      #do the same with another action (actions/setup-java@v3) that enable to setup jdk 21
       - name: Set up JDK 21
         # on utilise l'action setup-java@v3
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         # on spécifie la version de java et la distribution
         with:
           java-version: '21'
@@ -41,10 +41,10 @@ jobs:
     # steps to perform in job
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2.5.0
+        uses: actions/checkout@v4
 
       - name: Build image and push backend
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6.13.0
         with:
           # relative path to the place where source code with Dockerfile is located
           context: ./Docker/TP1/API/simple-api-student-main
@@ -52,7 +52,7 @@ jobs:
           tags:  ${{secrets.DOCKER_HUB_TOKEN}}/tp-devops-simple-api:latest
 
       - name: Build image and push database
-          uses: docker/build-push-action@v3
+          uses: docker/build-push-action@v6.13.0
         with:
           # relative path to the place where source code with Dockerfile is located
           context: ./Docker/TP1/DataBase
@@ -60,10 +60,9 @@ jobs:
           tags:  ${{secrets.DOCKER_HUB_TOKEN}}/tp-devops-database:latest
 
       - name: Build image and push httpd
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6.13.0
         with:
           # relative path to the place where source code with Dockerfile is located
           context: ./Docker/TP1/Front
           # Note: tags has to be all lower-case
           tags:  ${{secrets.DOCKER_HUB_TOKEN}}/tp-devops-httpd:latest
-
