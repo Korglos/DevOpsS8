@@ -1,13 +1,16 @@
 name: CI devops 2025
 on:
-  #to begin you want to launch this job in main and develop
+  # l'action se délanche lors d'un push sur la branche main ou develop
   push:
     branches: 
       - main
+      - develop
+  # l'action se délanche lors d'un pull request
   pull_request:
 
 jobs:
   test-backend: 
+    # on spécifie l'os sur lequel on veut lancer l'action
     runs-on: ubuntu-22.04
     steps:
      #checkout your github code using actions/checkout@v2.5.0
@@ -15,13 +18,52 @@ jobs:
 
      #do the same with another action (actions/setup-java@v3) that enable to setup jdk 21
       - name: Set up JDK 21
+        # on utilise l'action setup-java@v3
         uses: actions/setup-java@v3
+        # on spécifie la version de java et la distribution
         with:
           java-version: '21'
           distribution: 'corretto'
 
      #finally build your app with the latest command
       - name: Build and test with Maven
+        # On se place de le dossier où y'a le pom et on lance mvn clean verify
         run: | 
           cd Docker/TP1/API/simple-api-student-main
           mvn clean verify
+    
+  # define job to build and publish docker image
+  build-and-push-docker-image:
+    needs: test-backend
+    # run only when code is compiling and tests are passing
+    runs-on: ubuntu-22.04
+
+    # steps to perform in job
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.5.0
+
+      - name: Build image and push backend
+        uses: docker/build-push-action@v3
+        with:
+          # relative path to the place where source code with Dockerfile is located
+          context: ./Docker/TP1/API/simple-api-student-main
+          # Note: tags has to be all lower-case
+          tags:  ${{secrets.DOCKER_HUB_TOKEN}}/tp-devops-simple-api:latest
+
+      - name: Build image and push database
+          uses: docker/build-push-action@v3
+        with:
+          # relative path to the place where source code with Dockerfile is located
+          context: ./Docker/TP1/DataBase
+          # Note: tags has to be all lower-case
+          tags:  ${{secrets.DOCKER_HUB_TOKEN}}/tp-devops-database:latest
+
+      - name: Build image and push httpd
+        uses: docker/build-push-action@v3
+        with:
+          # relative path to the place where source code with Dockerfile is located
+          context: ./Docker/TP1/Front
+          # Note: tags has to be all lower-case
+          tags:  ${{secrets.DOCKER_HUB_TOKEN}}/tp-devops-httpd:latest
+
