@@ -60,6 +60,10 @@ jobs:
   # Define job to build and publish Docker images
   build-and-push-docker-image:
     needs: test-backend
+
+    # On run que sur la branche main
+    if: github.ref == 'refs/heads/main'
+
     # Run only when code is compiling and tests are passing
     runs-on: ubuntu-22.04
 
