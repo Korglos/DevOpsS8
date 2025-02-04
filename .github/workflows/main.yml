@@ -41,6 +41,9 @@ jobs:
 
     # Steps to perform in job
     steps:
+      - name: Login to DockerHub
+        run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
+
       - name: Checkout code
         uses: actions/checkout@v4
 
