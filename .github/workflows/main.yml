@@ -75,6 +75,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Make increment_version.sh executable
+        run: chmod +x increment_version.sh
+
       - name: Increment version
         run: ./increment_version.sh
 
