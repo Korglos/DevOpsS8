@@ -16,3 +16,8 @@
 * main.yml: les 3 jobs sont exécuté (test backend, sonar, docker). C'est la branch de prod, il est donc promordial que tout soit vérifié sur celle-ci.
 
 * develop.ym: seul 2 jobs sont exécuté (test backend, sonar). On exécute pas le job docker car il s'agit d'une branch de dev. Le code qui est push ne correspond pas forcément à une version définitive. On ne veut donc pas créer de version docker. Cepandant il est quand même important de vérifier quand même que les tests passent et de faire une analyse sonar car cela permet de reduire l'accumulation de la dette technique. De ce fait, on s'assure de toujours avoir un code propre
+
+### Bonus du bonus du bonus
+* Les numéros de version des tags dockers s'incrémentent tout seul
+* quand les pipeline de test ou sonar fail, les images ne sont pas push sur docker
+* Quand les pipeline de test ou sonar fail, la MR s'annule (en théorie, si tout va bien, inch'alla)

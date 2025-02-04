@@ -75,9 +75,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Define Docker Image Version
-        id: versioning
-        run: echo "VERSION=1.0.${{ github.run_number }}" >> $GITHUB_ENV
+      - name: Increment version
+        run: ./increment_version.sh
 
       - name: Build image and push backend
         uses: docker/build-push-action@v6
@@ -85,7 +84,7 @@ jobs:
           # Relative path to the place where source code with Dockerfile is located
           context: ./Docker/TP1/API/simple-api-student-main
           # Note: tags have to be all lowercase
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-simple-api:${{ env.VERSION }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-simple-api:${{ env.new_version }}
           push: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Build image and push database
@@ -94,7 +93,7 @@ jobs:
           # Relative path to the place where source code with Dockerfile is located
           context: ./Docker/TP1/DataBase
           # Note: tags have to be all lowercase
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-database:${{ env.VERSION }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-database:${{ env.new_version }}
           push: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Build image and push httpd
@@ -103,7 +102,7 @@ jobs:
           # Relative path to the place where source code with Dockerfile is located
           context: ./Docker/TP1/Front
           # Note: tags have to be all lowercase
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:${{ env.VERSION }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:${{ env.new_version }}
           push: ${{ github.ref == 'refs/heads/main' }}
 
   cancel-pr-on-failure:
