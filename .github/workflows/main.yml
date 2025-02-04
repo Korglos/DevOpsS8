@@ -18,10 +18,10 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '21'
-          distribution: 'temurin'
+          distribution: 'corretto'
 
      #finally build your app with the latest command
       - name: Build and test with Maven
         run: | 
-        cd Docker/TP1/API/simple-api-student-main
-        mvn clean verify
+          cd Docker/TP1/API/simple-api-student-main
+          mvn clean verify
