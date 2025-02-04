@@ -75,11 +75,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Make increment_version.sh executable
-        run: chmod +x increment_version.sh
+      - name: Install Maven
+        run: sudo apt update && sudo apt install -y maven
 
-      - name: Increment version
-        run: ./increment_version.sh
+      
+      - name: Extract version from pom.xml
+        id: versioning
+        run: |
+          cd ./Docker/TP1/API/simple-api-student-main
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -Eo '[0-9]+.[0-9]+.[0-9]+')
+          echo "Extracted version: $VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Build image and push backend
         uses: docker/build-push-action@v6
@@ -87,7 +93,9 @@ jobs:
           # Relative path to the place where source code with Dockerfile is located
           context: ./Docker/TP1/API/simple-api-student-main
           # Note: tags have to be all lowercase
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-simple-api:${{ env.new_version }}
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-simple-api:${{ env.VERSION }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-simple-api:latest
           push: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Build image and push database
@@ -96,7 +104,9 @@ jobs:
           # Relative path to the place where source code with Dockerfile is located
           context: ./Docker/TP1/DataBase
           # Note: tags have to be all lowercase
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-database:${{ env.new_version }}
+          tags: |
+            ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-database:${{ env.VERSION }}
+            ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-database:latest
           push: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Build image and push httpd
@@ -105,7 +115,9 @@ jobs:
           # Relative path to the place where source code with Dockerfile is located
           context: ./Docker/TP1/Front
           # Note: tags have to be all lowercase
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:${{ env.new_version }}
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:${{ env.VERSION }}
+            ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-httpd:latest
           push: ${{ github.ref == 'refs/heads/main' }}
 
   cancel-pr-on-failure:
