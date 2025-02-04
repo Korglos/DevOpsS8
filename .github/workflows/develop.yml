@@ -7,6 +7,8 @@ on:
       - develop
   # L'action se déclenche lors d'une pull request
   pull_request:
+    branches:
+      - develop
 
 jobs:
   test-backend:
@@ -28,7 +30,9 @@ jobs:
       # Build and test the app with Maven
       - name: Build and test with Maven
         # On se place dans le dossier où se trouve le pom.xml et on lance mvn clean verify
+        # set -e permet de stopper le script si une commande échoue
         run: |
+          set -e
           cd Docker/TP1/API/simple-api-student-main
           mvn clean verify
 
@@ -51,6 +55,8 @@ jobs:
       # Build and test the app with Maven
       - name: Build and test with Maven
         # On se place dans le dossier où se trouve le pom.xml et on lance l'analyse sonar
+        # set -e permet de stopper le script si une commande échoue
         run: |
+          set -e
           cd Docker/TP1/API/simple-api-student-main
           mvn -B verify sonar:sonar -Dsonar.projectKey=Korglos_DevOpsS8 -Dsonar.organization=korglos -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
