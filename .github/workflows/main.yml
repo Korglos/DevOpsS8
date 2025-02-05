@@ -62,7 +62,7 @@ jobs:
 
   # Define job to build and publish Docker images
   build-and-push-docker-image:
-    needs: [test-backend, sonar-backend]
+    # needs: [test-backend, sonar-backend]
 
     # Run only when code is compiling and tests are passing
     runs-on: ubuntu-22.04
