@@ -1,0 +1,12 @@
+---
+# tasks file for roles/bdd
+- name: Run BDD
+  docker_container:
+    name: pg-database
+    image: korglos/tp-devops-database:latest
+    pull: yes
+    env_file: /files/.env
+    networks:
+      - name: tp1-network1
+    volumes:
+      - data-volume:/var/lib/postgresql/data

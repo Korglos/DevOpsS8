@@ -1,0 +1,6 @@
+---
+# tasks file for roles/setup
+- name: Copy file with owner and permissions
+  ansible.builtin.copy:
+    src: /home/user/my-project/ansible/files/.env
+    dest: /files/.env

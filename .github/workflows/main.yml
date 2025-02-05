@@ -11,58 +11,58 @@ on:
       - main
 
 jobs:
-  # test-backend:
-  #   # On spécifie l'OS sur lequel on veut lancer l'action
-  #   runs-on: ubuntu-22.04
-  #   steps:
-  #     # Checkout your GitHub code using actions/checkout@v4
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
+  test-backend:
+    # On spécifie l'OS sur lequel on veut lancer l'action
+    runs-on: ubuntu-22.04
+    steps:
+      # Checkout your GitHub code using actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  #     # Set up JDK 21 using actions/setup-java@v4
-  #     - name: Set up JDK 21
-  #       uses: actions/setup-java@v4
-  #       # On spécifie la version de Java et la distribution
-  #       with:
-  #         java-version: '21'
-  #         distribution: 'corretto'
+      # Set up JDK 21 using actions/setup-java@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        # On spécifie la version de Java et la distribution
+        with:
+          java-version: '21'
+          distribution: 'corretto'
 
-  #     # Build and test the app with Maven
-  #     - name: Build and test with Maven
-  #       # On se place dans le dossier où se trouve le pom.xml et on lance mvn clean verify
-  #       run: |
-  #         set -e
-  #         cd Docker/TP1/API/simple-api-student-main
-  #         mvn clean verify
+      # Build and test the app with Maven
+      - name: Build and test with Maven
+        # On se place dans le dossier où se trouve le pom.xml et on lance mvn clean verify
+        run: |
+          set -e
+          cd Docker/TP1/API/simple-api-student-main
+          mvn clean verify
 
-  # sonar-backend:
-  #   # On spécifie l'OS sur lequel on veut lancer l'action
-  #   runs-on: ubuntu-22.04
-  #   steps:
-  #     # Checkout your GitHub code using actions/checkout@v4
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
+  sonar-backend:
+    # On spécifie l'OS sur lequel on veut lancer l'action
+    runs-on: ubuntu-22.04
+    steps:
+      # Checkout your GitHub code using actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-  #     # Set up JDK 21 using actions/setup-java@v4
-  #     - name: Set up JDK 21
-  #       uses: actions/setup-java@v4
-  #       # On spécifie la version de Java et la distribution
-  #       with:
-  #         java-version: '21'
-  #         distribution: 'corretto'
+      # Set up JDK 21 using actions/setup-java@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        # On spécifie la version de Java et la distribution
+        with:
+          java-version: '21'
+          distribution: 'corretto'
 
-  #     # Build and test the app with Maven
-  #     - name: Build and test with Maven
-  #       # On se place dans le dossier où se trouve le pom.xml et on lance l'analyse sonar
-  #       run: |
-  #         set -e
-  #         cd Docker/TP1/API/simple-api-student-main
-  #         mvn -B verify sonar:sonar -Dsonar.projectKey=Korglos_DevOpsS8 -Dsonar.organization=korglos -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      # Build and test the app with Maven
+      - name: Build and test with Maven
+        # On se place dans le dossier où se trouve le pom.xml et on lance l'analyse sonar
+        run: |
+          set -e
+          cd Docker/TP1/API/simple-api-student-main
+          mvn -B verify sonar:sonar -Dsonar.projectKey=Korglos_DevOpsS8 -Dsonar.organization=korglos -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
 
   # Define job to build and publish Docker images
   build-and-push-docker-image:
-    # needs: [test-backend, sonar-backend]
+    needs: [test-backend, sonar-backend]
 
     # Run only when code is compiling and tests are passing
     runs-on: ubuntu-22.04
@@ -131,19 +131,19 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-front-vue:latest
           push: ${{ github.ref == 'refs/heads/main' }}
 
-  # cancel-pr-on-failure:
-  #   needs: [test-backend, sonar-backend]
-  #   if: failure()
-  #   runs-on: ubuntu-22.04
-  #   steps:
-  #     - name: Close PR on Failure
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       run: |
-  #         pr_number=$(jq --raw-output .pull_request.number < "$GITHUB_EVENT_PATH")
-  #         echo "Closing PR #$pr_number due to pipeline failure"
-  #         curl -X PATCH \
-  #           -H "Authorization: token $GITHUB_TOKEN" \
-  #           -H "Accept: application/vnd.github.v3+json" \
-  #           https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number \
-  #           -d '{"state":"closed"}'
+  cancel-pr-on-failure:
+    needs: [test-backend, sonar-backend]
+    if: failure()
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Close PR on Failure
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pr_number=$(jq --raw-output .pull_request.number < "$GITHUB_EVENT_PATH")
+          echo "Closing PR #$pr_number due to pipeline failure"
+          curl -X PATCH \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number \
+            -d '{"state":"closed"}'

@@ -1,0 +1,12 @@
+- hosts: all
+  gather_facts: false
+  become: true
+  roles:
+    - setup
+    - docker
+    - networks
+    - volumes
+    - bdd
+    - api
+    - httdp
+    - vue

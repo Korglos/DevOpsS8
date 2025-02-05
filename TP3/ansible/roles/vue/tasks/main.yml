@@ -1,0 +1,9 @@
+---
+# tasks file for roles/vue
+- name: Run Front Vue
+  docker_container:
+    name: front-vue
+    image: korglos/tp-devops-front-vue:latest
+    pull: yes
+    networks:
+      - name: tp1-network2

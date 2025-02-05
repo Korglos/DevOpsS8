@@ -1,0 +1,6 @@
+---
+# tasks file for roles/volumes
+- name: Create a named volume for Docker bdd
+  docker_volume:
+    name: data-volume
+    state: present
