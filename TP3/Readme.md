@@ -17,3 +17,4 @@
 * Le rôle bdd créé le conteneur de la bdd
 * Le rôle api créé le conteneur de l'api
 * Le rôle httdp créé le conteneur de l'httdp
+* Le rôle vue créé le conteneur de la vue
