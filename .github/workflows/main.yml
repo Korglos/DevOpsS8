@@ -120,6 +120,17 @@ jobs:
             ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-httpd:latest
           push: ${{ github.ref == 'refs/heads/main' }}
 
+      - name: Build image and push front-vue
+        uses: docker/build-push-action@v6
+        with:
+          # Relative path to the place where source code with Dockerfile is located
+          context: ./TP3/devops-front-main
+          # Note: tags have to be all lowercase
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-front-vue:${{ env.VERSION }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-front-vue:latest
+          push: ${{ github.ref == 'refs/heads/main' }}
+
   cancel-pr-on-failure:
     needs: [test-backend, sonar-backend]
     if: failure()
