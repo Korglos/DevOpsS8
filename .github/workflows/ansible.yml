@@ -36,6 +36,10 @@ jobs:
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H mathis.clavioz.takima.cloud >> ~/.ssh/known_hosts
 
+    - name: Create .env file from GitHub Secret
+      run: |
+        echo "${{ secrets.ANSIBLE_ENV }}" > TP3/ansible/files/.env
+
     - name: Run Ansible Playbook
       run: |
         ansible-playbook -i TP3/ansible/inventories/setup.yml TP3/ansible/playbook.yml
