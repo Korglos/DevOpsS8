@@ -2,5 +2,5 @@
 # tasks file for roles/setup
 - name: Copy file with owner and permissions
   ansible.builtin.copy:
-    src: ./TP3/ansible/files/.env
+    src: ../../../files/.env
     dest: /files/.env
