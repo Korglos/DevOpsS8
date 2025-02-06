@@ -38,4 +38,4 @@ jobs:
 
     - name: Run Ansible Playbook
       run: |
-        ansible-playbook -i TP3/ansible/inventories/setup.yml playbook.yml
+        ansible-playbook -i TP3/ansible/inventories/setup.yml TP3/ansible/playbook.yml
