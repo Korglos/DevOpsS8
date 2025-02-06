@@ -24,6 +24,7 @@ public class DepartmentController {
 
     @GetMapping
     public ResponseEntity<Object> getDepartments() {
+        System.out.println("!!!!!!!!!!!!!!!!! C MOIIIIIIII !!!!!!!!!!!!!!!!");
         return ResponseEntity.ok(departmentService.getDepartments());
     }
 
