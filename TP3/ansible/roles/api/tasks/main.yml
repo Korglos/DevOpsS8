@@ -2,10 +2,11 @@
 # tasks file for roles/api
 - name: Run API
   docker_container:
-    name: api-back
+    name: api-back_{{ item }}
     image: korglos/tp-devops-simple-api:latest
     pull: yes
     env_file: /files/.env
     networks:
       - name: tp1-network1
       - name: tp1-network2
+  loop: [1, 2]
