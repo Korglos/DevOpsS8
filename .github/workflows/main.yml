@@ -1,149 +1,171 @@
-# name: CI Main devops 2025
+name: CI Main devops 2025
 
-# on:
-#   # L'action se déclenche lors d'un push sur la branche main ou develop
-#   push:
-#     branches:
-#       - main
-#   # L'action se déclenche lors d'une pull request
-#   pull_request:
-#     branches:
-#       - main
+on:
+  # L'action se déclenche lors d'un push sur la branche main ou develop
+  push:
+    branches:
+      - main
+  # L'action se déclenche lors d'une pull request
+  pull_request:
+    branches:
+      - main
 
-# jobs:
-#   test-backend:
-#     # On spécifie l'OS sur lequel on veut lancer l'action
-#     runs-on: ubuntu-22.04
-#     steps:
-#       # Checkout your GitHub code using actions/checkout@v4
-#       - name: Checkout code
-#         uses: actions/checkout@v4
+jobs:
+  test-backend:
+    # On spécifie l'OS sur lequel on veut lancer l'action
+    runs-on: ubuntu-22.04
+    steps:
+      # Checkout your GitHub code using actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-#       # Set up JDK 21 using actions/setup-java@v4
-#       - name: Set up JDK 21
-#         uses: actions/setup-java@v4
-#         # On spécifie la version de Java et la distribution
-#         with:
-#           java-version: '21'
-#           distribution: 'corretto'
+      # Set up JDK 21 using actions/setup-java@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        # On spécifie la version de Java et la distribution
+        with:
+          java-version: '21'
+          distribution: 'corretto'
 
-#       # Build and test the app with Maven
-#       - name: Build and test with Maven
-#         # On se place dans le dossier où se trouve le pom.xml et on lance mvn clean verify
-#         run: |
-#           set -e
-#           cd Docker/TP1/API/simple-api-student-main
-#           mvn clean verify
+      # Build and test the app with Maven
+      - name: Build and test with Maven
+        # On se place dans le dossier où se trouve le pom.xml et on lance mvn clean verify
+        run: |
+          set -e
+          cd Docker/TP1/API/simple-api-student-main
+          mvn clean verify
 
-#   sonar-backend:
-#     # On spécifie l'OS sur lequel on veut lancer l'action
-#     runs-on: ubuntu-22.04
-#     steps:
-#       # Checkout your GitHub code using actions/checkout@v4
-#       - name: Checkout code
-#         uses: actions/checkout@v4
+  sonar-backend:
+    # On spécifie l'OS sur lequel on veut lancer l'action
+    runs-on: ubuntu-22.04
+    steps:
+      # Checkout your GitHub code using actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-#       # Set up JDK 21 using actions/setup-java@v4
-#       - name: Set up JDK 21
-#         uses: actions/setup-java@v4
-#         # On spécifie la version de Java et la distribution
-#         with:
-#           java-version: '21'
-#           distribution: 'corretto'
+      # Set up JDK 21 using actions/setup-java@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        # On spécifie la version de Java et la distribution
+        with:
+          java-version: '21'
+          distribution: 'corretto'
 
-#       # Build and test the app with Maven
-#       - name: Build and test with Maven
-#         # On se place dans le dossier où se trouve le pom.xml et on lance l'analyse sonar
-#         run: |
-#           set -e
-#           cd Docker/TP1/API/simple-api-student-main
-#           mvn -B verify sonar:sonar -Dsonar.projectKey=Korglos_DevOpsS8 -Dsonar.organization=korglos -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      # Build and test the app with Maven
+      - name: Build and test with Maven
+        # On se place dans le dossier où se trouve le pom.xml et on lance l'analyse sonar
+        run: |
+          set -e
+          cd Docker/TP1/API/simple-api-student-main
+          mvn -B verify sonar:sonar -Dsonar.projectKey=Korglos_DevOpsS8 -Dsonar.organization=korglos -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
 
-#   # Define job to build and publish Docker images
-#   build-and-push-docker-image:
-#     needs: [test-backend, sonar-backend]
+  # Define job to build and publish Docker images
+  build-and-push-docker-image:
+    needs: [test-backend, sonar-backend]
 
-#     # Run only when code is compiling and tests are passing
-#     runs-on: ubuntu-22.04
+    # Run only when code is compiling and tests are passing
+    runs-on: ubuntu-22.04
 
-#     # Steps to perform in job
-#     steps:
-#       - name: Login to DockerHub
-#         run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
+    # Steps to perform in job
+    steps:
+      - name: Login to DockerHub
+        run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
 
-#       - name: Checkout code
-#         uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-#       - name: Install Maven
-#         run: sudo apt update && sudo apt install -y maven
+      - name: Install Maven
+        run: sudo apt update && sudo apt install -y maven
 
       
-#       - name: Extract version from pom.xml
-#         id: versioning
-#         run: |
-#           cd ./Docker/TP1/API/simple-api-student-main
-#           VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -Eo '[0-9]+.[0-9]+.[0-9]+')
-#           echo "Extracted version: $VERSION"
-#           echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Extract version from pom.xml
+        id: versioning
+        run: |
+          cd ./Docker/TP1/API/simple-api-student-main
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -Eo '[0-9]+.[0-9]+.[0-9]+')
+          echo "Extracted version: $VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-#       - name: Build image and push backend
-#         uses: docker/build-push-action@v6
-#         with:
-#           # Relative path to the place where source code with Dockerfile is located
-#           context: ./Docker/TP1/API/simple-api-student-main
-#           # Note: tags have to be all lowercase
-#           tags: |
-#             ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-simple-api:${{ env.VERSION }}
-#             ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-simple-api:latest
-#           push: ${{ github.ref == 'refs/heads/main' }}
+      - name: Build image and push backend
+        uses: docker/build-push-action@v6
+        with:
+          # Relative path to the place where source code with Dockerfile is located
+          context: ./Docker/TP1/API/simple-api-student-main
+          # Note: tags have to be all lowercase
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-simple-api:${{ env.VERSION }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-simple-api:latest
+          push: ${{ github.ref == 'refs/heads/main' }}
 
-#       - name: Build image and push database
-#         uses: docker/build-push-action@v6
-#         with:
-#           # Relative path to the place where source code with Dockerfile is located
-#           context: ./Docker/TP1/DataBase
-#           # Note: tags have to be all lowercase
-#           tags: |
-#             ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-database:${{ env.VERSION }}
-#             ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-database:latest
-#           push: ${{ github.ref == 'refs/heads/main' }}
+      - name: Build image and push database
+        uses: docker/build-push-action@v6
+        with:
+          # Relative path to the place where source code with Dockerfile is located
+          context: ./Docker/TP1/DataBase
+          # Note: tags have to be all lowercase
+          tags: |
+            ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-database:${{ env.VERSION }}
+            ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-database:latest
+          push: ${{ github.ref == 'refs/heads/main' }}
 
-#       - name: Build image and push httpd
-#         uses: docker/build-push-action@v6
-#         with:
-#           # Relative path to the place where source code with Dockerfile is located
-#           context: ./Docker/TP1/Front
-#           # Note: tags have to be all lowercase
-#           tags: |
-#             ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:${{ env.VERSION }}
-#             ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-httpd:latest
-#           push: ${{ github.ref == 'refs/heads/main' }}
+      - name: Build image and push httpd
+        uses: docker/build-push-action@v6
+        with:
+          # Relative path to the place where source code with Dockerfile is located
+          context: ./Docker/TP1/Front
+          # Note: tags have to be all lowercase
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-httpd:${{ env.VERSION }}
+            ${{secrets.DOCKERHUB_USERNAME}}/tp-devops-httpd:latest
+          push: ${{ github.ref == 'refs/heads/main' }}
 
-#       - name: Build image and push front-vue
-#         uses: docker/build-push-action@v6
-#         with:
-#           # Relative path to the place where source code with Dockerfile is located
-#           context: ./TP3/devops-front-main
-#           # Note: tags have to be all lowercase
-#           tags: |
-#             ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-front-vue:${{ env.VERSION }}
-#             ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-front-vue:latest
-#           push: ${{ github.ref == 'refs/heads/main' }}
+      - name: Build image and push front-vue
+        uses: docker/build-push-action@v6
+        with:
+          # Relative path to the place where source code with Dockerfile is located
+          context: ./TP3/devops-front-main
+          # Note: tags have to be all lowercase
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-front-vue:${{ env.VERSION }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/tp-devops-front-vue:latest
+          push: ${{ github.ref == 'refs/heads/main' }}
 
-#   cancel-pr-on-failure:
-#     needs: [test-backend, sonar-backend]
-#     if: failure()
-#     runs-on: ubuntu-22.04
-#     steps:
-#       - name: Close PR on Failure
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#         run: |
-#           pr_number=$(jq --raw-output .pull_request.number < "$GITHUB_EVENT_PATH")
-#           echo "Closing PR #$pr_number due to pipeline failure"
-#           curl -X PATCH \
-#             -H "Authorization: token $GITHUB_TOKEN" \
-#             -H "Accept: application/vnd.github.v3+json" \
-#             https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number \
-#             -d '{"state":"closed"}'
+  deploy:
+    needs: [build-and-push-docker-image]
+
+    runs-on: ubuntu-latest
+
+    env:
+      ANSIBLE_HOST_KEY_CHECKING: "False"
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install Ansible
+      run: |
+        python -m pip install --upgrade pip
+        pip install ansible
+
+    - name: Configure SSH
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H mathis.clavioz.takima.cloud >> ~/.ssh/known_hosts
+
+    - name: Create .env file from GitHub Secret
+      run: |
+        echo "${{ secrets.ANSIBLE_ENV }}" > TP3/ansible/files/.env
+
+    - name: Run Ansible Playbook
+      run: |
+        ansible-playbook -i TP3/ansible/inventories/setup.yml TP3/ansible/playbook.yml
