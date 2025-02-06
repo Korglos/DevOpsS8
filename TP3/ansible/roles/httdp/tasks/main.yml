@@ -4,6 +4,7 @@
   docker_container:
     name: rproxy-front
     image: korglos/tp-devops-httpd:latest
+    
     pull: yes
     ports:
       - "80:80"
